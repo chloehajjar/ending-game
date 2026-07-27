@@ -1672,7 +1672,9 @@ function drawWinScreen() {
   const dockX = rocketBaseX - 100;
   const dockY = rocketBaseY + 18;
   const winAstronautX =
-    elapsedMs < 1400 ? lerp(-120, dockX, approachT) : lerp(dockX, width + 140, launchT);
+    elapsedMs < 1400
+      ? lerp(-120, dockX, approachT)
+      : lerp(dockX, width + 140, launchT);
   const winAstronautY =
     elapsedMs < 1400
       ? height * 0.66 + sin(frameCount * 0.08) * 7
