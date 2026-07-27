@@ -1664,13 +1664,19 @@ function drawWinScreen() {
 
   const elapsedMs = millis() - winSceneStartMs;
   const approachT = constrain(elapsedMs / 1400, 0, 1);
-  const astronautX = lerp(-120, width * 0.33, approachT);
-  const astronautY = height * 0.66 + sin(frameCount * 0.08) * 7;
   const rocketBaseX = width * 0.72;
   const rocketBaseY = height * 0.58;
   const launchT = constrain((elapsedMs - 1400) / 1400, 0, 1);
   const rocketY = rocketBaseY - launchT * 280;
   const rocketScale = 1 + launchT * 0.16;
+  const dockX = rocketBaseX - 100;
+  const dockY = rocketBaseY + 18;
+  const winAstronautX =
+    elapsedMs < 1400 ? lerp(-120, dockX, approachT) : lerp(dockX, width + 140, launchT);
+  const winAstronautY =
+    elapsedMs < 1400
+      ? height * 0.66 + sin(frameCount * 0.08) * 7
+      : lerp(dockY, -90, launchT) - sin(launchT * PI) * 80;
 
   noStroke();
   fill(170, 75, 45);
@@ -1706,8 +1712,18 @@ function drawWinScreen() {
     );
   }
 
+  if (launchT > 0) {
+    for (let i = 0; i < 8; i++) {
+      const trailT = launchT * (i + 1) * 0.12;
+      const trailX = lerp(winAstronautX, rocketBaseX - 25, trailT);
+      const trailY = lerp(winAstronautY, rocketY + 20, trailT);
+      fill(255, 230, 150, 120 - i * 10);
+      circle(trailX, trailY, 5 + i * 1.2);
+    }
+  }
+
   if (imgCelebratoryPose) {
-    image(imgCelebratoryPose, astronautX, astronautY, 90, 120);
+    image(imgCelebratoryPose, winAstronautX, winAstronautY, 90, 120);
   }
 
   fill(255, 255, 255, 180);
@@ -1720,7 +1736,11 @@ function drawWinScreen() {
       height - 70,
     );
   } else {
-    text("The spacecraft lifts off into the stars.", width / 2, height - 70);
+    text(
+      "The spacecraft lifts off and ejects the astronaut into the stars.",
+      width / 2,
+      height - 70,
+    );
   }
 
   fill(60, 180, 100);
